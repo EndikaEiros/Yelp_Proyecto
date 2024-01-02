@@ -1,0 +1,67 @@
+---
+- hosts: all
+  tasks:
+  - name: copy core-site.xml file to all hosts
+    ansible.builtin.copy:
+      src: core-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/core-site.xml
+
+- hosts: hadoop_master
+  tasks:
+  - name: copy hdfs-site.xml file to hadoop-master node
+    ansible.builtin.copy:
+      src: hadoop-master/hdfs-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/hdfs-site.xml
+
+  - name: Copy workers file to hadoop-master
+    ansible.builtin.copy:
+      src: hadoop-master/workers
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/workers
+
+  - name: Create NameNode metadata path
+    ansible.builtin.file:
+      path: /home/ec2-user/nn
+      state: directory
+
+  - name: Format the NameNode directory
+    ansible.builtin.shell: /home/ec2-user/hadoop-3.3.6/bin/hdfs namenode -format -force
+
+  - name: Copy namenode.service file to hadoop-master
+    ansible.builtin.copy:
+      src: hadoop-master/namenode.service
+      dest: /tmp/namenode.service
+
+  - name: Copy namenode.service to the proper location
+    ansible.builtin.shell: sudo cp /tmp/namenode.service /etc/systemd/system/namenode.service
+
+  - name: Start NameNode
+    ansible.builtin.shell: sudo systemctl start namenode
+
+  - name: Set the service to start at init
+    ansible.builtin.shell: sudo systemctl enable namenode
+
+- hosts: hadoop_worker
+  tasks:
+  - name: copy hdfs-site.xml file to hadoop-worker nodes
+    ansible.builtin.copy:
+      src: hadoop-worker/hdfs-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/hdfs-site.xml
+
+  - name: Create DataNode directory
+    ansible.builtin.file:
+      path: /home/ec2-user/dn
+      state: directory
+
+  - name: Copy datanode.service file to hadoop-worker
+    ansible.builtin.copy:
+      src: hadoop-worker/datanode.service
+      dest: /tmp/datanode.service
+
+  - name: Copy datanode.service to the proper location
+    ansible.builtin.shell: sudo cp /tmp/datanode.service /etc/systemd/system/datanode.service
+
+  - name: Start DataNode
+    ansible.builtin.shell: sudo systemctl start datanode
+
+  - name: Set the service to start at init
+    ansible.builtin.shell: sudo systemctl enable datanode

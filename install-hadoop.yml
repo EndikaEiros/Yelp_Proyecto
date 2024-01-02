@@ -1,0 +1,19 @@
+---
+- hosts: all
+  tasks:
+  - name: Download Hadoop
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/hadoop/common/hadoop-3.3.6/hadoop-3.3.6.tar.gz
+      dest: /home/ec2-user
+
+  - name: Extract Hadoop
+    ansible.builtin.command: tar -xf /home/ec2-user/hadoop-3.3.6.tar.gz
+
+  - name: Install Java
+    ansible.builtin.command: sudo yum install -y java-1.8.0-amazon-corretto java-1.8.0-amazon-corretto-devel
+
+  - name: Set JAVA_HOME environment variable at ~/.bashrc
+    ansible.builtin.shell: echo 'export JAVA_HOME=/usr/lib/jvm/java' >> ~/.bashrc
+
+  - name: Set HADOOP_HOME environment variable at ~/.bashrc
+    ansible.builtin.shell: echo 'export HADOOP_HOME=/home/ec2-user/hadoop-3.3.6' >> ~/.bashrc

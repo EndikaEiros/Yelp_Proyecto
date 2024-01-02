@@ -1,0 +1,67 @@
+- hosts: localhost
+  tasks:
+  - name: Create security group for node communication
+    amazon.aws.ec2_security_group:
+      name: hadoop-sg
+      description: sg with total access within hadoop nodes
+      region: us-east-1
+      purge_rules: false
+      rules:
+        - proto: tcp
+          cidr_ip: 0.0.0.0/0
+          ports:
+          - 8088
+
+- hosts: hadoop_master
+  tasks:
+  - name: copy yarn-site.xml file to hadoop-master node
+    ansible.builtin.copy:
+      src: hadoop-master/yarn-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/yarn-site.xml
+
+  - name: Copy resourcemanager.service file to hadoop-master
+    become: true
+    ansible.builtin.copy:
+      src: hadoop-master/resourcemanager.service
+      dest: /etc/systemd/system/resourcemanager.service
+
+  - name: Start ResourceManager
+    become: true
+    systemd:
+      state: started
+      name: resourcemanager
+      daemon_reload: true
+      enabled: true
+
+- hosts: hadoop_worker
+  tasks:
+  - name: copy yarn-site.xml file to hadoop-worker node
+    ansible.builtin.copy:
+      src: hadoop-worker/yarn-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/yarn-site.xml
+
+  - name: Copy nodemanager.service file to hadoop-master
+    become: true
+    ansible.builtin.copy:
+      src: hadoop-worker/nodemanager.service
+      dest: /etc/systemd/system/nodemanager.service
+
+  - name: Start NodeManager
+    become: true
+    systemd:
+      state: started
+      name: nodemanager
+      daemon_reload: true
+      enabled: true
+
+- hosts: hadoop_client
+  tasks:
+  - name: copy yarn-site.xml file to hadoop-client node
+    ansible.builtin.copy:
+      src: hadoop-client/yarn-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/yarn-site.xml
+
+  - name: copy mapred-site.xml file to hadoop-client node
+    ansible.builtin.copy:
+      src: hadoop-client/mapred-site.xml
+      dest: /home/ec2-user/hadoop-3.3.6/etc/hadoop/mapred-site.xml

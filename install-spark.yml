@@ -1,0 +1,58 @@
+---
+- hosts: all
+  tasks:
+  - name: Download Spark
+    ansible.builtin.get_url:
+      url: https://dlcdn.apache.org/spark/spark-3.5.0/spark-3.5.0-bin-hadoop3.tgz
+      dest: /home/ec2-user
+
+  - name: Extract Spark
+    ansible.builtin.command: tar -zxvf /home/ec2-user/spark-3.5.0-bin-hadoop3.tgz
+
+  - name: Set SPARK_HOME environment variable at ~/.bashrc
+    ansible.builtin.shell: echo 'export SPARK_HOME=/home/ec2-user/spark-3.5.0-bin-hadoop3' >> ~/.bashrc
+    
+- hosts: hadoop_client
+  become: yes
+  tasks:
+  
+  - name: Set HADOOP_CONF_DIR environment variable at ~/.bashrc
+    ansible.builtin.shell: echo 'export HADOOP_CONF_DIR=/home/ec2-user/hadoop-3.3.6/etc/hadoop/' >> ~/.bashrc
+
+  - name: Set YARN_CONF_DIR environment variable at ~/.bashrc
+    ansible.builtin.shell: echo 'export YARN_CONF_DIR=/home/ec2-user/hadoop-3.3.6/etc/hadoop/' >> ~/.bashrc
+    
+  - name: Create /app directory
+    ansible.builtin.file:
+      path: /app
+      state: directory
+      owner: ec2-user
+      group: ec2-user
+      mode: 0777
+ 
+  - name: copy YELP.py file to hadoop-client node
+    ansible.builtin.copy:
+      src: YELP.py
+      dest: /app/YELP.py
+    
+- hosts: hadoop_master
+  become: yes
+  tasks:
+  
+  - name: Create /data directory
+    ansible.builtin.file:
+      path: /data
+      state: directory
+      owner: ec2-user
+      group: ec2-user
+      mode: 0777
+  
+  - name: copy business data file to hadoop-master node
+    ansible.builtin.copy:
+      src: data/yelp_academic_dataset_business.json
+      dest: /data/yelp_academic_dataset_business.json
+      
+  - name: copy reviews data file to hadoop-master node
+    ansible.builtin.copy:
+      src: data/yelp_academic_dataset_review.json
+      dest: /data/yelp_academic_dataset_review.json

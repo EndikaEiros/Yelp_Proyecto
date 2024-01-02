@@ -1,0 +1,67 @@
+---
+- hosts: localhost
+  tasks:
+  - name: Create security group for node communication
+    amazon.aws.ec2_security_group:
+      name: hadoop-sg
+      description: sg with total access within hadoop nodes
+      region: us-east-1
+      rules:
+        - proto: all
+          group_name: hadoop-sg
+        - proto: tcp
+          cidr_ip: 0.0.0.0/0
+          ports: 
+          - 22
+
+  - name: Start hadoop master instance
+    amazon.aws.ec2_instance:
+      name: "yelp-master"
+      key_name: "vockey"
+      instance_type: t3.large
+      security_group: hadoop-sg
+      image_id: ami-051f7e7f6c2f40dc1
+      region: us-east-1
+      tags:
+        Group: hadoop
+      volumes:
+      - device_name: /dev/xvda
+        ebs:
+          volume_size: 50
+          delete_on_termination: true
+      
+  - name: Start hadoop worker instances
+    amazon.aws.ec2_instance:
+      name: "yelp-worker-{{item}}"
+      key_name: "vockey"
+      instance_type: t3.large
+      security_group: hadoop-sg
+      image_id: ami-051f7e7f6c2f40dc1
+      region: us-east-1
+      tags:
+        Group: hadoop
+      volumes:
+      - device_name: /dev/xvda
+        ebs:
+          volume_size: 50
+          delete_on_termination: true
+    loop:
+      - "1"
+      - "2"
+      - "3" 
+
+  - name: Start hadoop client instance
+    amazon.aws.ec2_instance:
+      name: "yelp-client"
+      key_name: "vockey"
+      instance_type: t3.small
+      security_group: hadoop-sg
+      image_id: ami-051f7e7f6c2f40dc1
+      region: us-east-1
+      tags:
+        Group: hadoop
+      volumes:
+      - device_name: /dev/xvda
+        ebs:
+          volume_size: 8
+          delete_on_termination: true
