@@ -1,5 +1,4 @@
 # PROYECTO: YELP
-# ARQUITECTURA TECNOLÓGICA PARA BIG DATA
 
 ## Consultas realizadas
 
