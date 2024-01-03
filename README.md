@@ -1,4 +1,4 @@
-# PROYECTO: YELP - ARQUITECTURA TECNOLÓGICA PARA BIG DATA
+# PROYECTO: YELP
 
 ## Consultas realizadas
 
@@ -10,7 +10,7 @@
 6. Analizar cómo un atributo determinado afecta a la puntuación del negocio
 7. Obtener la media anual de puntuación para las 10 categorías con mayor número de
 reseñas.
-### Resultados y gráficos en "consultas_spark.ipynb"
+#### Resultados y gráficos en "consultas_spark.ipynb"
 
 ## Instrucciones para la ejecución en AWS EC2
 
