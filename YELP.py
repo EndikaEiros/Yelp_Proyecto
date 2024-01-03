@@ -16,6 +16,8 @@ spark = SparkSession.builder \
     .config("spark.executor.memory", "1g") \
     .getOrCreate()
 
+spark.sparkContext.setLogLevel("WARN")
+
 # Rutas de los ficheros JSON
 business_path_json = "/data/yelp_academic_dataset_business.json"
 review_path_json = "/data/yelp_academic_dataset_review.json"
@@ -101,16 +103,19 @@ result4.write.parquet(consultas_path+"consulta4", mode="overwrite")
 
 windowSpec = Window.partitionBy("stars").orderBy(col("count").desc())
 
+# Renombrar la columna "stars" de review_df a "review_stars"
+df_review = df_review.withColumnRenamed("stars", "review_stars")
+
 result5 = (
     df_review
     .join(df_business, "business_id")
-    .select("stars", explode(split("categories", ", ")).alias("category"))
-    .groupBy("stars", "category")
+    .select("review_stars", explode(split("categories", ", ")).alias("category"))
+    .groupBy("review_stars", "category")
     .agg(count("*").alias("count"))
     .withColumn("row_number", row_number().over(windowSpec))
     .filter(col("row_number") <= 10)
     .drop("row_number")
-    .orderBy("stars", col("count").desc())
+    .orderBy("review_stars", col("count").desc())
 )
 
 print("\n Realizando consulta 5:")
@@ -143,7 +148,7 @@ top_categories_by_reviews = (
 )
 
 # Renombrar la columna "stars" de review_df a "review_stars"
-df_review = df_review.withColumnRenamed("stars", "review_stars")
+# df_review = df_review.withColumnRenamed("stars", "review_stars")
 
 # Filtrar las reseñas para las categorías seleccionadas
 filtered_reviews = (
