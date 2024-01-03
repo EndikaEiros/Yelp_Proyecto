@@ -76,28 +76,29 @@ result2.show()
 result2.write.parquet(consultas_path+"consulta2", mode="overwrite")
 
 # Consulta 3
-print("\n Realizando consulta 3:")
-print("\n \t Obtener las 10 ciudades con la mayor puntuación media")
+
 result3 = df_business.select("city", "stars") \
     .groupBy("city").agg(avg("stars").alias("avg_stars")) \
     .orderBy(col("avg_stars").desc()).limit(10) \
     .orderBy(col("city"))
 
+print("\n Realizando consulta 3:")
+print("\n \t Obtener las 10 ciudades con la mayor puntuación media")
 result3.show()
 result3.write.parquet(consultas_path+"consulta3", mode="overwrite")
 
 # Consulta 4
-print("\n Realizando consulta 4:")
-print("\n \t Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas) ")
+
 # Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas)
 result4 = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words"))
 
+print("\n Realizando consulta 4:")
+print("\n \t Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas) ")
 result4.show()
 result4.write.parquet(consultas_path+"consulta4", mode="overwrite")
 
 # Consulta 5
-print("\n Realizando consulta 5:")
-print("\n \t Obtener las 10 categorías que más se repiten para cada puntuación (1-5 estrellas)")
+
 windowSpec = Window.partitionBy("stars").orderBy(col("count").desc())
 
 result5 = (
@@ -112,22 +113,23 @@ result5 = (
     .orderBy("stars", col("count").desc())
 )
 
+print("\n Realizando consulta 5:")
+print("\n \t Obtener las 10 categorías que más se repiten para cada puntuación (1-5 estrellas)")
 result5.show(500)
 result5.write.parquet(consultas_path+"consulta5", mode="overwrite")
 
 # Consulta 6
-print("\n Realizando consulta 6:")
-print("\n \t Analizar cómo un atributo determinado afecta a la puntuación del negocio")
+
 
 result6 = df_business.select("stars", "attributes.ByAppointmentOnly") \
     .groupBy("ByAppointmentOnly").agg(avg("stars").alias("avg_stars"))
 
+print("\n Realizando consulta 6:")
+print("\n \t Analizar cómo un atributo determinado afecta a la puntuación del negocio")
 result6.show()
 result6.write.parquet(consultas_path+"consulta6", mode="overwrite")
 
 # Consulta 7
-print("\n Realizando consulta 7:")
-print("\n \t Obtener la media anual de puntuación para las 10 categorías con mayor número de reseñas")
 
 # Obtener las 10 categorías con mayor número de reseñas
 top_categories_by_reviews = (
@@ -164,7 +166,8 @@ result7 = (
     .drop("row_number")
     .orderBy("category", "year")
 )
-
+print("\n Realizando consulta 7:")
+print("\n \t Obtener la media anual de puntuación para las 10 categorías con mayor número de reseñas")
 result7.show(400)
 result7.write.parquet(consultas_path+"consulta7", mode="overwrite")
 
