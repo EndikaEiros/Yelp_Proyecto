@@ -49,28 +49,31 @@ TODO Operaciones / Consultas
 """
 
 # Consulta 1
-print("\n Realizando consulta 1:")
-print("\n \t Obtener los 10 negocios con mayor número de revisiones")
+
 
 top_businesses = df_review.groupBy("business_id").agg(count("review_id").alias("num_reviews")) \
     .orderBy(col("num_reviews").desc()).limit(10)
 
 result1 = top_businesses.join(df_business, "business_id").select("name", "num_reviews").orderBy(col("num_reviews").desc())
+
+print("\n Realizando consulta 1:")
+print("\n \t Obtener los 10 negocios con mayor número de revisiones")
 result1.show()
 
-result1.write.parquet(consultas_path+"consulta1")
+result1.write.parquet(consultas_path+"consulta1", mode="overwrite")
 
 # Consulta 2
-print("\n Realizando consulta 2:")
-print("\n \t Obtener las 10 categorías con la mayor puntuación media")
+
 result2 = df_business.select("business_id", "stars", "categories") \
     .withColumn("category", explode(split(col("categories"), ", "))) \
     .groupBy("category").agg(avg("stars").alias("avg_stars")) \
     .orderBy(col("avg_stars").desc()).limit(10) \
     .orderBy(col("category"))
 
+print("\n Realizando consulta 2:")
+print("\n \t Obtener las 10 categorías con la mayor puntuación media")
 result2.show()
-result2.write.parquet(consultas_path+"consulta2")
+result2.write.parquet(consultas_path+"consulta2", mode="overwrite")
 
 # Consulta 3
 print("\n Realizando consulta 3:")
@@ -81,7 +84,7 @@ result3 = df_business.select("city", "stars") \
     .orderBy(col("city"))
 
 result3.show()
-result3.write.parquet(consultas_path+"consulta3")
+result3.write.parquet(consultas_path+"consulta3", mode="overwrite")
 
 # Consulta 4
 print("\n Realizando consulta 4:")
@@ -90,7 +93,7 @@ print("\n \t Calcular la media de palabras para las reseñas de cada puntuación
 result4 = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words"))
 
 result4.show()
-result4.write.parquet(consultas_path+"consulta4")
+result4.write.parquet(consultas_path+"consulta4", mode="overwrite")
 
 # Consulta 5
 print("\n Realizando consulta 5:")
@@ -110,7 +113,7 @@ result5 = (
 )
 
 result5.show(500)
-result5.write.parquet(consultas_path+"consulta5")
+result5.write.parquet(consultas_path+"consulta5", mode="overwrite")
 
 # Consulta 6
 print("\n Realizando consulta 6:")
@@ -120,7 +123,7 @@ result6 = df_business.select("stars", "attributes.ByAppointmentOnly") \
     .groupBy("ByAppointmentOnly").agg(avg("stars").alias("avg_stars"))
 
 result6.show()
-result6.write.parquet(consultas_path+"consulta6")
+result6.write.parquet(consultas_path+"consulta6", mode="overwrite")
 
 # Consulta 7
 print("\n Realizando consulta 7:")
@@ -163,7 +166,7 @@ result7 = (
 )
 
 result7.show(400)
-result7.write.parquet(consultas_path+"consulta7")
+result7.write.parquet(consultas_path+"consulta7", mode="overwrite")
 
 # Cierra la sesión de Spark
 spark.stop()
