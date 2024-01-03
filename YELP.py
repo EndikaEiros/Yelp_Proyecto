@@ -16,7 +16,7 @@ spark = SparkSession.builder \
     .config("spark.executor.memory", "1g") \
     .getOrCreate()
 
-spark.sparkContext.setLogLevel("WARN")
+spark.sparkContext.setLogLevel("ERROR")
 
 # Rutas de los ficheros JSON
 business_path_json = "/data/yelp_academic_dataset_business.json"
