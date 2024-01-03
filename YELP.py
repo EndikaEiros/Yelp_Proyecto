@@ -27,15 +27,14 @@ review_path = "/data/yelp_academic_dataset_review"
 consultas_path = "/user/ec2-user/consultas/"
 
 # Verifica si las tablas existen y las crea las tablas si no existen
-if not spark.status(business_path, strict=False) is not None:
-    print("Generando tabla bussiness")
-    spark.read.json(business_path_json).write.parquet(business_path, mode="overwrite")
-    print("Se ha generado la tabla business")
+print("\n ------------- Generando tabla bussiness -------------")
+spark.read.json(business_path_json).write.parquet(business_path, mode="overwrite")
+print("\n ------------- Se ha generado la tabla business -------------")
 
-if not spark.status(review_path, strict=False) is not None:
-    print("Generando tabla review")
-    spark.read.json(review_path_json).write.parquet(review_path, mode="overwrite")
-    print("Se ha generado la tabla review")
+
+print("\n ------------- Generando tabla review -------------")
+spark.read.json(review_path_json).write.parquet(review_path, mode="overwrite")
+print("\n ------------- Se ha generado la tabla review -------------")
 
 # Cargar los datos de la base de datos de 
 df_business = spark.read.parquet(business_path)
