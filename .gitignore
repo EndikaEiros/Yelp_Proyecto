@@ -1,3 +1,5 @@
 /YELP.pdf
 /data
 inventory.yml
+core-site.xml
+hadoop-master/workers
