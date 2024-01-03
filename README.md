@@ -25,10 +25,19 @@ ansible-playbook -i inventory.yml --key-file=~/.ssh/vockey.pem --user ec2-user i
 
 ```
 spark-3.5.0-bin-hadoop3/bin/spark-submit \
+  --deploy-mode client \
+  --num-executors <num_executors> \
+  /app/YELP.py
+```
+
+Comando completo:
+```
+spark-3.5.0-bin-hadoop3/bin/spark-submit \
   --master yarn \
   --deploy-mode client \
   --num-executors <num_executors> \
   --executor-memory <memoria_por_executor> \
+  --executor-cores <cpu_cores_por_executor> \
   /app/YELP.py
 ```
 
