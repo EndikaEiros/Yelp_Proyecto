@@ -32,3 +32,19 @@ spark-3.5.0-bin-hadoop3/bin/spark-submit \
   /app/YELP.py
 ```
 
+#### Comandos útiles
+
+Ver nodos corriendo:
+```
+hadoop-3.3.6/bin/yarn node -list
+```
+
+Ver app corriendo:
+```
+hadoop-3.3.6/bin/yarn app -list
+```
+
+Poner en marcha un nodemanager (desde el nodo)
+```
+hadoop-3.3.6/bin/yarn nodemanager
+```
