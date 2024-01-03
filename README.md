@@ -22,7 +22,15 @@
    ```
    ansible-playbook -i inventory.yml --key-file=~/.ssh/vockey.pem --user ec2-user install-spark.yml
    ```
-5. Comprobar que los NodeMaganers están lanzados:
+5. Introducir los datos en HDFS
+   ```
+   hadoop-3.3.6/bin/hdfs dfs -mkdir /data
+   ```
+   ```
+   hadoop-3.3.6/bin/hdfs dfs -put /data/* /data
+   ```
+
+6. Comprobar que los NodeMaganers están lanzados:
    ```
    hadoop-3.3.6/bin/yarn node -list
    ```
@@ -55,7 +63,7 @@
      /app/YELP.py
    ```
 
-7. Resultado
+8. Resultado
    
    Se imprime por consola los resultados de las consultas y se almacenan en HDFS
    
