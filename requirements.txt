@@ -15,3 +15,6 @@ resolvelib==1.0.1
 s3transfer==0.6.2
 six==1.16.0
 urllib3==1.26.16
+matplotlib==3.8.2
+pandas==2.1.4
+seaborn==0.13.1
