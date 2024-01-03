@@ -1,7 +1,7 @@
 import pyspark
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+# import pandas as pd
+# import seaborn as sns
+# import matplotlib.pyplot as plt
 
 from datetime import datetime, date
 from pyspark.sql import SparkSession, Row, Column
@@ -64,33 +64,33 @@ result1.write.parquet(consultas_path+"consulta1")
 # Consulta 2
 print("\n Realizando consulta 2:")
 print("\n \t Obtener las 10 categorías con la mayor puntuación media")
-avg_stars_by_category = df_business.select("business_id", "stars", "categories") \
+result2 = df_business.select("business_id", "stars", "categories") \
     .withColumn("category", explode(split(col("categories"), ", "))) \
     .groupBy("category").agg(avg("stars").alias("avg_stars")) \
     .orderBy(col("avg_stars").desc()).limit(10) \
     .orderBy(col("category"))
 
-result2 = avg_stars_by_category.show()
+result2.show()
 result2.write.parquet(consultas_path+"consulta2")
 
 # Consulta 3
 print("\n Realizando consulta 3:")
 print("\n \t Obtener las 10 ciudades con la mayor puntuación media")
-avg_stars_by_city = df_business.select("city", "stars") \
+result3 = df_business.select("city", "stars") \
     .groupBy("city").agg(avg("stars").alias("avg_stars")) \
     .orderBy(col("avg_stars").desc()).limit(10) \
     .orderBy(col("city"))
 
-result3 = avg_stars_by_city.show()
+result3.show()
 result3.write.parquet(consultas_path+"consulta3")
 
 # Consulta 4
 print("\n Realizando consulta 4:")
 print("\n \t Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas) ")
 # Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas)
-avg_words_by_stars = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words"))
+result4 = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words"))
 
-result4 = avg_words_by_stars.show()
+result4.show()
 result4.write.parquet(consultas_path+"consulta4")
 
 # Consulta 5
@@ -98,7 +98,7 @@ print("\n Realizando consulta 5:")
 print("\n \t Obtener las 10 categorías que más se repiten para cada puntuación (1-5 estrellas)")
 windowSpec = Window.partitionBy("stars").orderBy(col("count").desc())
 
-top_categories_by_stars = (
+result5 = (
     df_review
     .join(df_business, "business_id")
     .select("stars", explode(split("categories", ", ")).alias("category"))
@@ -110,17 +110,17 @@ top_categories_by_stars = (
     .orderBy("stars", col("count").desc())
 )
 
-result5 = top_categories_by_stars.show(500)
+result5.show(500)
 result5.write.parquet(consultas_path+"consulta5")
 
 # Consulta 6
 print("\n Realizando consulta 6:")
 print("\n \t Analizar cómo un atributo determinado afecta a la puntuación del negocio")
 
-attribute_effect = df_business.select("stars", "attributes.ByAppointmentOnly") \
+result6 = df_business.select("stars", "attributes.ByAppointmentOnly") \
     .groupBy("ByAppointmentOnly").agg(avg("stars").alias("avg_stars"))
 
-result6 = attribute_effect.show()
+result6.show()
 result6.write.parquet(consultas_path+"consulta6")
 
 # Consulta 7
