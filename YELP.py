@@ -9,27 +9,32 @@ from pyspark.sql.window import Window
 from pyspark.sql.functions import col, avg, count, explode, split, upper, expr, collect_list, size, split, year, row_number
 
 # Inicializar una sesión de Spark
-spark = SparkSession.builder.appName("yelp").master("yarn").getOrCreate()
+spark = SparkSession.builder \
+    .appName("yelp") \
+    .master("yarn") \
+    .config("spark.driver.memory", "1g") \
+    .config("spark.executor.memory", "1g") \
+    .getOrCreate()
 
+# Rutas de los ficheros JSON
+business_path_json = "/data/yelp_academic_dataset_business.json"
+review_path_json = "/data/yelp_academic_dataset_review.json"
 
 # Rutas de HDFS para las dos tablas
+business_path = "/data/yelp_academic_dataset_business"
+review_path = "/data/yelp_academic_dataset_review"
 
-# "hdfs://yelp-master:/data/yelp_academic_dataset_business"
-
-business_path = "hdfs://yelp-master:/data/yelp_academic_dataset_business"
-review_path = "hdfs://yelp-master:/data/yelp_academic_dataset_review"
-
-consultas_path = "hdfs://yelp-master:9000/user/ec2-user/consultas/"
+consultas_path = "/user/ec2-user/consultas/"
 
 # Verifica si las tablas existen y las crea las tablas si no existen
 if not spark.status(business_path, strict=False) is not None:
     print("Generando tabla bussiness")
-    spark.read.json("/data/yelp_academic_dataset_business.json").write.parquet(business_path, mode="overwrite")
+    spark.read.json(business_path_json).write.parquet(business_path, mode="overwrite")
     print("Se ha generado la tabla business")
 
 if not spark.status(review_path, strict=False) is not None:
     print("Generando tabla review")
-    spark.read.json("/data/yelp_academic_dataset_review.json").write.parquet(review_path, mode="overwrite")
+    spark.read.json(review_path_json).write.parquet(review_path, mode="overwrite")
     print("Se ha generado la tabla review")
 
 # Cargar los datos de la base de datos de 
@@ -39,8 +44,6 @@ df_review = spark.read.parquet(review_path)
 # Muestra los datos
 df_review.show()
 df_business.show()
-
-# df_review.write.parquet("hdfs://yelp-master:/resultados/avg_stars_by_category_yearly.parquet", mode="overwrite")
 
 """
 TODO Operaciones / Consultas
