@@ -101,10 +101,10 @@ result4.write.parquet(consultas_path+"consulta4", mode="overwrite")
 
 # Consulta 5
 
-windowSpec = Window.partitionBy("stars").orderBy(col("count").desc())
-
 # Renombrar la columna "stars" de review_df a "review_stars"
 df_review = df_review.withColumnRenamed("stars", "review_stars")
+
+windowSpec = Window.partitionBy("review_stars").orderBy(col("count").desc())
 
 result5 = (
     df_review
