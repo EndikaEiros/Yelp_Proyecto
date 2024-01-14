@@ -19,19 +19,19 @@
 3. Crear instancias Hadoop e instalar YARN
    - seguir pasos en: https://github.com/memaldi/hadoop-ansible-ec2
 4. Descargar, instalar y configurar Spark:
-   ```
+   ```bash
    ansible-playbook -i inventory.yml --key-file=~/.ssh/vockey.pem --user ec2-user install-spark.yml
    ```
 5. Introducir los datos en HDFS
-   ```
+   ```bash
    hadoop-3.3.6/bin/hdfs dfs -mkdir /data
    ```
-   ```
+   ```bash
    hadoop-3.3.6/bin/hdfs dfs -put /data/* /data
    ```
 
 6. Comprobar que los NodeMaganers están lanzados:
-   ```
+   ```bash
    hadoop-3.3.6/bin/yarn node -list
    ```
    También de pueden observar desde la Web UI (introduciendo la IP pública del master):
@@ -39,13 +39,13 @@
    http://ec2-18-232-80-108.compute-1.amazonaws.com:8088/cluster
    
    Si los nodos no están activados se pueden activar desde cada uno de los workers:
-   ```
+   ```bash
    hadoop-3.3.6/bin/yarn nodemanager
    ```
 
 7. Iniciar trabajo Spark en YARN desde el nodo cliente:
 
-   ```
+   ```bash
    spark-3.5.0-bin-hadoop3/bin/spark-submit \
      --deploy-mode client \
      --num-executors 3 \
@@ -53,7 +53,7 @@
    ```
 
    Comando completo (los parámetros adicionales ya se han introducido desde la app):
-   ```
+   ```bash
    spark-3.5.0-bin-hadoop3/bin/spark-submit \
      --master yarn \
      --deploy-mode client \
