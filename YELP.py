@@ -97,10 +97,6 @@ print("✓")
 print("\n Realizando consulta 4...", end="")
 # Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas)
 result4 = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words")).orderBy(col("stars"))
-<<<<<<< Updated upstream
-print("✓")
-=======
->>>>>>> Stashed changes
 
 print(" Media de palabras para las reseñas de cada puntuación (1-5 estrellas):")
 result4.show()
@@ -137,22 +133,10 @@ print(" Almacenando resultados de la consulta 5...", end="")
 result5.write.parquet(consultas_path+"consulta5", mode="overwrite")
 print("✓")
 
-<<<<<<< Updated upstream
 
 # Consulta 6
 
 print("\n Realizando consulta 6...", end="")
-result6 = df_business.select("stars", "attributes.ByAppointmentOnly") \
-    .groupBy("ByAppointmentOnly").agg(avg("stars").alias("avg_stars"))
-print("✓")
-
-print(" Análisis de cómo un atributo determinado a la puntuación del negocio:")
-result6.show()
-
-print(" Almacenando resultados de la consulta 6...", end="")
-=======
-# Consulta 6
-# Agregar la columna "review_count_interval" al DataFrame
 df_business = df_business.withColumn("review_count_interval", (floor(df_business["review_count"] / 100) * 100).cast("int")).orderBy(col("review_count_interval"))
 
 # Calcular la media y la suma de puntuación para cada intervalo de review_count
@@ -161,10 +145,12 @@ result6 = df_business.groupBy("review_count_interval").agg(
     sum("review_count").alias("total_reviews")
 )
 
-# Mostrar el resultado
-result6.show(4400)
+print("✓")
 
->>>>>>> Stashed changes
+print(" Análisis de cómo un atributo determinado a la puntuación del negocio:")
+result6.show()
+
+print(" Almacenando resultados de la consulta 6...", end="")
 result6.write.parquet(consultas_path+"consulta6", mode="overwrite")
 print("✓")
 
