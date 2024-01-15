@@ -2,7 +2,7 @@ import pyspark
 from datetime import datetime, date
 from pyspark.sql import SparkSession, Row, Column
 from pyspark.sql.window import Window
-from pyspark.sql.functions import col, avg, count, explode, split, upper, expr, collect_list, size, split, year, row_number
+from pyspark.sql.functions import col, avg, count, explode, split, size, split, year, row_number, mean, floor
 
 # Inicializar una sesión de Spark
 spark = SparkSession.builder \
@@ -97,7 +97,10 @@ print("✓")
 print("\n Realizando consulta 4...", end="")
 # Calcular la media de palabras para las reseñas de cada puntuación (1-5 estrellas)
 result4 = df_review.groupBy("stars").agg(avg(size(split(col("text"), " "))).alias("avg_words")).orderBy(col("stars"))
+<<<<<<< Updated upstream
 print("✓")
+=======
+>>>>>>> Stashed changes
 
 print(" Media de palabras para las reseñas de cada puntuación (1-5 estrellas):")
 result4.show()
@@ -134,6 +137,7 @@ print(" Almacenando resultados de la consulta 5...", end="")
 result5.write.parquet(consultas_path+"consulta5", mode="overwrite")
 print("✓")
 
+<<<<<<< Updated upstream
 
 # Consulta 6
 
@@ -146,6 +150,21 @@ print(" Análisis de cómo un atributo determinado a la puntuación del negocio:
 result6.show()
 
 print(" Almacenando resultados de la consulta 6...", end="")
+=======
+# Consulta 6
+# Agregar la columna "review_count_interval" al DataFrame
+df_business = df_business.withColumn("review_count_interval", (floor(df_business["review_count"] / 100) * 100).cast("int")).orderBy(col("review_count_interval"))
+
+# Calcular la media y la suma de puntuación para cada intervalo de review_count
+result6 = df_business.groupBy("review_count_interval").agg(
+    mean("stars").alias("media_puntuacion"),
+    sum("review_count").alias("total_reviews")
+)
+
+# Mostrar el resultado
+result6.show(4400)
+
+>>>>>>> Stashed changes
 result6.write.parquet(consultas_path+"consulta6", mode="overwrite")
 print("✓")
 
